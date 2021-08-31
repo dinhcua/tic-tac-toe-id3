@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Tic Tac Toe ID3</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="card" data-index="1"></div>
+      <div class="card" data-index="2"></div>
+      <div class="card" data-index="3"></div>
+      <div class="card" data-index="4"></div>
+      <div class="card" data-index="5"></div>
+      <div class="card" data-index="6"></div>
+      <div class="card" data-index="7"></div>
+      <div class="card" data-index="8"></div>
+      <div class="card" data-index="9"></div>
+      <div class="sample"></div>
+    </div>
+  </body>
+  <script
+    type="text/javascript"
+    src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.3.3/underscore-min.js"
+  ></script>
+  <script type="text/javascript" src="js/id3.js"></script>
+  <script type="text/javascript" src="js/tic-tac-examples.js"></script>
+  <script>
+    const cards = Array.from(document.querySelectorAll(".card"));
+    const winner = [
+      [1, 2, 3],
+      [4, 5, 6],
+      [7, 8, 9],
+      [1, 5, 9],
+      [3, 5, 7],
+      [1, 4, 7],
+      [2, 5, 8],
+      [3, 6, 9],
+    ];
+    let firstPlayer = [],
+      secondPlayer = [],
+      turn = 0;
+    let sample = {
+      top_left_square: "b",
+      top_middle_square: "b",
+      top_right_square: "b",
+      middle_left_square: "b",
+      middle_middle_square: "b",
+      middle_right_square: "b",
+      bottom_left_square: "b",
+      bottom_middle_square: "b",
+      bottom_right_square: "b",
+      classification: "negative",
+    };
+    function check(array) {
+      let finalResult = false;
+      for (let item of winner) {
+        let res = item.every((val) => array.indexOf(val) !== -1);
+        if (res) {
+          finalResult = true;
+          break;
+        }
+      }
+      return finalResult;
+    }
+    function winnerpleyr(p) {
+      const modal = document.createElement("div");
+      const player = document.createTextNode(p);
+      const replay = document.createElement("button");
+      modal.classList.add("winner");
+      modal.appendChild(player);
+      replay.appendChild(document.createTextNode("Replay"));
+      replay.onclick = function () {
+        rep();
+      };
+      modal.appendChild(replay);
+      document.body.appendChild(modal);
+    }
+
+    function draw() {
+      if (this.classList == "card") {
+        turn++;
+        sample[features_tic_tac_toe[this.dataset.index - 1]] = "o";
+        this.classList.add("o");
+        firstPlayer.push(Number(this.dataset.index));
+        if (check(firstPlayer)) {
+          winnerpleyr("Player win");
+          return true;
+        }
+        var testModel = id3(
+          examples_tic_tac_toe,
+          "classification",
+          features_tic_tac_toe
+        );
+        for (let i = 0; i < features_tic_tac_toe.length; i++) {
+          let position = features_tic_tac_toe[i];
+          if (sample[position] == "b") {
+            sample[position] = "x";
+            console.log(predict(testModel, sample));
+            if (predict(testModel, sample) == "positive") {
+              console.log("no");
+              console.log("number", i + 1);
+              let item = document.querySelector(`[data-index='${i + 1}']`);
+              item.classList.add("x");
+              secondPlayer.push(i + 1);
+              break;
+            }
+            sample[position] = "b";
+            console.log(sample);
+          }
+        }
+
+        if (check(secondPlayer)) {
+          winnerpleyr("Computer win");
+          return true;
+        }
+        // }
+        if (turn === 5) {
+          winnerpleyr("Draw");
+        }
+      }
+    }
+    function rep() {
+      const w = document.querySelector(".winner");
+      firstPlayer = [];
+      secondPlayer = [];
+      turn = 0;
+      w.remove();
+      [].forEach.call(cards, function (el) {
+        el.classList.remove("x");
+        el.classList.remove("o");
+      });
+      sample = {
+        top_left_square: "b",
+        top_middle_square: "b",
+        top_right_square: "b",
+        middle_left_square: "b",
+        middle_middle_square: "b",
+        middle_right_square: "b",
+        bottom_left_square: "b",
+        bottom_middle_square: "b",
+        bottom_right_square: "b",
+        classification: "negative",
+      };
+    }
+    cards.forEach((card) => card.addEventListener("click", draw));
+  </script>
+</html>
